@@ -67,8 +67,8 @@
 
 　　　　答：学习github程序代码，实现输出 “I'm liuruiyang！” 程序。首先导入操作指令集，再定义输出函数out和程序终止返回函数halt，最后在main函数中调用输出“I'm liuruiyang！”  
 <div style="text-align:center;">
-	<img src="/Users/liuruiyang/Desktop/学习/大三下学期/操作系统/实验截图/01-2-os-helloworld.png" width="900">
-	<img src="/Users/liuruiyang/Desktop/学习/大三下学期/操作系统/实验截图/01-2-os-helloworld-done.png" width="900">
+	<img src="./实验截图/01-2-os-helloworld.png" width="900">
+	<img src="./实验截图/01-2-os-helloworld-done.png" width="900">
 </div>
 
 - 输入的字符并输出你输入的字符

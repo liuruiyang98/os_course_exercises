@@ -96,7 +96,9 @@ SETGATE(intr, 1,2,3,0);
 
 > 答：执行上述指令后，intr 的值为 0x20003。  
 　　计算后该结构为（高地址） 00000000 00000000 10001111 00000000 00000000 00000010 00000000 00000011 （低地址）  
-　　unsigned 占用 4 字节，即 32 位，getedesc 占用 8 字节，即 64 位。按题目操作，由于 X86 使用小端存储，intr 所占内存对应位置应该是 getedesc 的低 32 位。同样由于 X86 使用小端存储，所以 intr 高 16 位为 gd\_ss，低16位为 gd\_off\_15\_0。
+　　unsigned 占用 4 字节，即 32 位，getedesc 占用 8 字节，即 64 位。按题目操作，由于 X86 使用小端存储，intr 所占内存对应位置应该是 getedesc 的低 32 位。同样由于 X86 使用小端存储，所以 intr 高 16 位为 gd\_ss，低16位为 gd\_off\_15\_0。  
+　　参考资料：http://blog.sina.com.cn/s/blog_8b08096f0102ux2y.html  
+　　参考资料：https://www.cnblogs.com/Dumblidor/p/6959296.html　　
 
 ### 课堂实践练习
 

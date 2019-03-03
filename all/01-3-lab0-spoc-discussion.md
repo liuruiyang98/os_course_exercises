@@ -18,32 +18,38 @@
 
 - 你理解的对于类似ucore这样需要进程/虚存/文件系统的操作系统，在硬件设计上至少需要有哪些直接的支持？至少应该提供哪些功能的特权指令？
 
-　　答：在硬件设计上至少需要  
-　　　　至少需要提供特权指令类型及功能如下：  
-　　　　　1. Exceptions：LIDT, LTR, IRET, STI, CLI（中断/异常/系统服务等管理指令）  
-　　　　　2. Virtual Memory: MOV CRn, INVLPG, INVPCID（TLB/MMU等管理指令）  
-　　　　　3. Privilege Modes: SYSRET, SYSEXIT, IRET（调整特权级管理指令）  
-　　　　　4. Segmentation/Paging: LGDT, LLDT CRx: CR0,CR3（分段分页管理指令）....
+	> 答：在硬件设计上至少需要提供的支持有 虚存管理、可读写的安全可靠的文件系统、时钟中断等  
+	
+	> 至少需要提供特权指令类型及功能如下：  
+		　　1. Exceptions：LIDT, LTR, IRET, STI, CLI（中断/异常/系统服务等管理指令）  
+		　　2. Virtual Memory: MOV CRn, INVLPG, INVPCID（TLB/MMU等管理指令）  
+		　　3. Privilege Modes: SYSRET, SYSEXIT, IRET（调整特权级管理指令）  
+		　　4. Segmentation/Paging: LGDT, LLDT CRx: CR0,CR3（分段分页管理指令）....
 
 - 你理解的x86的实模式和保护模式有什么区别？物理地址、线性地址、逻辑地址的含义分别是什么？
 
-　　答：实模式和保护模式的区别有：  
-　　　　1. x86的实模式是CPU启动的时候的模式，这时候就相当于一个速度超快的8086；而保护模式是操作系统接管CPU后CPU进入的模式。  
-　　　　2. 二者能够访问的物理内存空间大下不同。实模式下软件可访问的物理内存空间不能超过1M；而保护模式下可访问4G的物理内存空间(32条地址线)。  
-　　　　3. 实模式下指针访问的是实际的物理地址，这样系统进程内存不受保护；而保护模式下物理内存不能直接被程序访问，其指针指向的虚拟地址都将由操作系统转换为实际物理地址再执行访问，实现了对进程内存的保护。  
-　　　　4. 实模式下不能使用多线程，也不能实现权限分级；而保护模式下支持内存分页机制，提供对虚拟内存的良好支持，还支持优先级机制和良好的检查机制。  
-
-　　　　物理地址：物理内存地址空间是处理器提交到总线上用于访问计算机系统中的内存和外设的最终地址，一个计算机系统只有一个物理地址空间。  
-　　　　线性地址：线性地址空间是在操作系统的虚存管理之下每个运行的应用程序能访问的地址空间。每个运行的应用程序都认为自己独享整个西算计系统的地址空间，这样可以让多个运行的应用程序之间相互隔离。  
-　　　　逻辑地址：逻辑地址空间是应用程序直接使用的地址空间。  
+	> 答：实模式和保护模式的区别有：  
+	　　1. x86的实模式是CPU启动的时候的模式，这时候就相当于一个速度超快的8086；而保护模式是操作系统接管CPU后CPU进入的模式。  
+	　　2. 二者能够访问的物理内存空间大下不同。实模式下软件可访问的物理内存空间不能超过1M；而保护模式下可访问4G的物理内存空间(32条地址线)。  
+	　　3. 实模式下指针访问的是实际的物理地址，这样系统进程内存不受保护；而保护模式下物理内存不能直接被程序访问，其指针指向的虚拟地址都将由操作系统转换为实际物理地址再执行访问，实现了对进程内存的保护。  
+	　　4. 实模式下不能使用多线程，也不能实现权限分级；而保护模式下支持内存分页机制，提供对虚拟内存的良好支持，还支持优先级机制和良好的检查机制。  
+		
+	> * 物理地址：物理内存地址空间是处理器提交到总线上用于访问计算机系统中的内存和外设的最终地址，一个计算机系统只有一个物理地址空间。  
+	> * 线性地址：线性地址空间是在操作系统的虚存管理之下每个运行的应用程序能访问的地址空间。每个运行的应用程序都认为自己独享整个西算计系统的地址空间，这样可以让多个运行的应用程序之间相互隔离。  
+	> * 逻辑地址：逻辑地址空间是应用程序直接使用的地址空间。  
 
 - 你理解的risc-v的特权模式有什么区别？不同模式在地址访问方面有何特征？
 
-　　答：RISC-V架构定义了三种工作模式，又称特权模式（Privileged Mode）：  
-　　　　1. Machine Mode：机器模式，简称M Mode。  
-　　　　2. Supervisor Mode：监督模式，简称S Mode。  
-　　　　3. User Mode：用户模式，简称U Mode。  
-　　　　RISC-V架构定义M Mode为必选模式，另外两种为可选模式。通过不同的模式组合可以实现不同的系统。
+	> 答：RISC-V架构定义了四种工作模式，又称特权模式（Privileged Mode）：  
+		　　1. Machine Mode：机器模式，简称M Mode。    
+		　　2. Supervisor Mode：监督模式，简称S Mode。  
+	 	　　3. User Mode：用户模式，简称U Mode。  
+		　　4. Hypervisor：简称H Mode。  
+		　　    
+	> RISC-V架构定义M Mode为必选模式，另外两种为可选模式。通过不同的模式组合可以实现不同的系统。不同的特权级包含多个 CSR（control and status register，控制和状态寄存器）寄存器。标准 RISC-V ISA 设置了一个 12 位的编码空间（csr[11:0]）可用于 4096 个 CSR。根据约定，CSR 地址的高 4 位（csr[11:8]）用于编码CSR根据特权级读写的可访问性。最高 2 位（csr[11:10]）指示这个寄存器是否是可以读/写（00、01或者10），还是只读的（11）。后面 2 位（csr[9:8]）指示了能够访问这个 CSR 所需要的最低特权级（用户级是 00，管理员级是 01）
+<div style="text-align:center;">
+	<img src="./实验截图/01-3-riscV-address.png" width="900">
+</div>
 
 - 理解ucore中list_entry双向链表数据结构及其4个基本操作函数和ucore中一些基于它的代码实现（此题不用填写内容）
 
@@ -63,7 +69,7 @@
  };
 ```
 
-　　答：这些数字表示该成员变量的位宽，即其所占的二进制位数(bit)。如 **gd_off_15_0** 表示段中偏移量低16位，其后面的 **16** 表示其占位宽为16。
+	> 答：这些数字表示该成员变量的位宽，即其所占的二进制位数(bit)。如 **gd_off_15_0** 表示段中偏移量低16位，其后面的 **16** 表示其占位宽为16。他们一共构成了一个 8 字节大小的中断描述符。
 
 - 对于如下的代码段，
 
@@ -88,7 +94,9 @@ SETGATE(intr, 1,2,3,0);
 ```
 请问执行上述指令后， intr的值是多少？
 
-　　答：执行上述指令后，intr的值为 0x10002。  
+> 答：执行上述指令后，intr 的值为 0x20003。  
+　　计算后该结构为 00000000 00000000 10001111 00000000 00000000 00000010 00000000 00000011  
+　　因为 intr 是 unsigned int，为 4byte，所以答案是 0x20003
 
 ### 课堂实践练习
 
@@ -96,11 +104,59 @@ SETGATE(intr, 1,2,3,0);
 
 1. 请在ucore中找一段你认为难度适当的AT&T格式X86汇编代码，尝试解释其含义。
 
+	> 答：我选择的代码如下，代码来自于 trapentry.S：
+
+		.text
+		.globl __alltraps
+		__alltraps:
+		    # push registers to build a trap frame
+		    # therefore make the stack look like a struct trapframe
+		    pushl %ds
+		    pushl %es
+		    pushl %fs
+		    pushl %gs
+		    pushal
+	
+		    # load GD_KDATA into %ds and %es to set up data segments for kernel
+		    movl $GD_KDATA, %eax
+		    movw %ax, %ds
+		    movw %ax, %es
+		
+		    # push %esp to pass a pointer to the trapframe as an argument to trap()
+		    pushl %esp
+		
+		    # call trap(tf), where tf=%esp
+		    call trap
+		
+		    # pop the pushed stack pointer
+		    popl %esp
+		
+		    # return falls through to trapret...
+		.globl __trapret
+		__trapret:
+		    # restore registers from stack
+		    popal
+		
+		    # restore %ds, %es, %fs and %gs
+		    popl %gs
+		    popl %fs
+		    popl %es
+		    popl %ds
+		
+		    # get rid of the trap number and error code
+		    addl $0x8, %esp
+		    iret  
+
+
+	> 本段代码要实现的目标是实现中断服务例程的进入以及结束后的返回。首先在执行中断服务例程之前通过 push 操作将寄存器的值压栈，然后将 GD_KDATA 加载到 DS 和 ES 寄存器以建立内核态的数据段。再将 esp 寄存器的值(trapfram 的指针)压栈作为 trap 函数的参数，然后调用 C 函数 trap 执行中断服务例程。当执行结束后将 esp 原来的值弹出，然后依次恢复之前压栈保存的寄存器的值，最后去掉陷阱编号和错误代码后调用 iret 指令返回。
+
 2. (option)请在rcore中找一段你认为难度适当的RV汇编代码，尝试解释其含义。
 
 #### 练习二
 
-宏定义和引用在内核代码中很常用。请枚举ucore或rcore中宏定义的用途，并举例描述其含义。
+宏定义和引用在内核代码中很常用。请枚举ucore或rcore中宏定义的用途，并举例描述其含义。  
+
+> 答：例如宏 **#define SETGATE(gate, istrap, sel, off, dpl)**，作为中断描述符的初始化的函数；宏  **#define STS_TG32 0xF**，作为一个常量使用，其作用于中断描述符的 gd\_type，代表是陷入门。
 
 #### reference
  - [Intel格式和AT&T格式汇编区别](http://www.cnblogs.com/hdk1993/p/4820353.html)

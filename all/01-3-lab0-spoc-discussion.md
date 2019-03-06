@@ -26,7 +26,9 @@
 		　　3. Privilege Modes: SYSRET, SYSEXIT, IRET（调整特权级管理指令）  
 		　　4. Segmentation/Paging: LGDT, LLDT CRx: CR0,CR3（分段分页管理指令）....
 
-- 你理解的x86的实模式和保护模式有什么区别？物理地址、线性地址、逻辑地址的含义分别是什么？
+- 你理解的x86的实模式和保护模式有什么区别？你认为从实模式切换到保护模式需要注意那些方面？
+
+- 物理地址、线性地址、逻辑地址的含义分别是什么？它们之间有什么联系？
 
 	> 答：实模式和保护模式的区别有：  
 	　　1. x86的实模式是CPU启动的时候的模式，这时候就相当于一个速度超快的8086；而保护模式是操作系统接管CPU后CPU进入的模式。  
@@ -160,9 +162,17 @@ SETGATE(intr, 1,2,3,0);
 
 > 答：例如宏 **#define SETGATE(gate, istrap, sel, off, dpl)**，作为中断描述符的初始化的函数；宏  **#define STS_TG32 0xF**，作为一个常量使用，其作用于中断描述符的 gd\_type，代表是陷入门。
 
-#### reference
+
+## 问答题
+
+#### 在配置实验环境时，你遇到了那些问题，是如何解决的。
+
+## 参考资料
  - [Intel格式和AT&T格式汇编区别](http://www.cnblogs.com/hdk1993/p/4820353.html)
  - [x86汇编指令集  ](http://hiyyp1234.blog.163.com/blog/static/67786373200981811422948/)
  - [PC Assembly Language, Paul A. Carter, November 2003.](https://pdos.csail.mit.edu/6.828/2016/readings/pcasm-book.pdf)
  - [*Intel 80386 Programmer's Reference Manual*, 1987](https://pdos.csail.mit.edu/6.828/2016/readings/i386/toc.htm)
  - [IA-32 Intel Architecture Software Developer's Manuals](http://www.intel.com/content/www/us/en/processors/architectures-software-developer-manuals.html)
+ - [v9 cpu architecture](https://github.com/chyyuu/os_tutorial_lab/blob/master/v9_computer/docs/v9_computer.md)
+ - [RISC-V cpu architecture](http://www.riscvbook.com/chinese/)
+ - [OS相关经典论文](https://github.com/chyyuu/aos_course_info/blob/master/readinglist.md)

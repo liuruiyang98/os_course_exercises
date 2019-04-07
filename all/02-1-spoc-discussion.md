@@ -41,18 +41,19 @@
 
 
 - 理解rcore中的Berkeley BootLoader (BBL)的功能。
-	> 答：BBL is a supervisor execution environment for tethered RISC-V systems. It is designed to host the RISC-V Linux port.  
-	https://www.bsdcan.org/2016/schedule/attachments/385_riscv_bsdcan16.pdf  
-	> 完成的功能如下：  
-	　　1. 硬件初始化（如DRAM，串口等）  
-	　　2. 将引导参数传递给内核  
-	　　3. 加载内核
+  > 答：BBL is a supervisor execution environment for tethered RISC-V systems. It is designed to host the RISC-V Linux port.  
+  https://www.bsdcan.org/2016/schedule/attachments/385_riscv_bsdcan16.pdf  
+  > 完成的功能如下：  
+  　　1. 硬件初始化（如DRAM，串口等）  
+  　　2. 将引导参数传递给内核  
+
+  　　3. 加载内核
 
 ## 3.2 系统启动流程
 
 - x86中分区引导扇区的结束标志是什么？
 
-	> 答：x86中分区引导扇区的结束标志是两字节的结束标志符 **0x55AA**。
+	> 答：x86中分区引导扇区的结束标志是两字节的结束标志符 **0x55AA**。（注意只有510字节有用的）
 
 - x86中在UEFI中的可信启动有什么作用？
 
@@ -60,10 +61,11 @@
 
 - RV中BBL的启动过程大致包括哪些内容？
 
-	> 答：启动过程大致如下：  
-	　　1. 硬件初始化（如DRAM，串口等）  
-	　　2. 将引导参数传递给内核  
-	　　3. 加载内核
+  > 答：启动过程大致如下：  
+  　　1. 硬件初始化（如DRAM，串口等）  
+  　　2. 将引导参数传递给内核  
+
+  　　3. 加载内核
 
 ## 3.3 中断、异常和系统调用比较
 - 什么是中断、异常和系统调用？
@@ -109,7 +111,7 @@
 - 以ucore/rcore lab8的answer为例，分析ucore 应用的系统调用编写和含义。
 - 以ucore/rcore lab8的answer为例，尝试修改并运行ucore OS kernel代码，使其具有类似Linux应用工具`strace`的功能，即能够显示出应用程序发出的系统调用，从而可以分析ucore应用的系统调用执行过程。
 
- 
+
 ## 3.6 请分析函数调用和系统调用的区别
 - 系统调用与函数调用的区别是什么？
 

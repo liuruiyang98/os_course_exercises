@@ -5,38 +5,101 @@
 
 1. 进程切换的可能时机有哪些？
 
+   > 答：时间片用完、被高优先级进程抢占、进入等待状态、进程结束
+
 2. 分析ucore的进程切换代码，说明ucore的进程切换触发时机和进程切换的判断时机都有哪些。
 
+   > 答：schedule、switch_to、proc_run
+
 3. ucore的进程控制块数据结构是如何组织的？主要字段分别表示什么？
+
+   > struct proc_struct {
+   >
+   > 　　enum proc_state state;                      // Process state
+   >
+   > 　　int pid;                                    // Process ID
+   >
+   > 　　int runs;                                   // the running times of Proces
+   >
+   > 　　uintptr_t kstack;                           // Process kernel stack
+   >
+   > 　　volatile bool need_resched;                 // bool value: need to be rescheduled to release CPU?
+   >
+   > 　　struct proc_struct *parent;                 // the parent process
+   >
+   > 　　struct mm_struct *mm;                       // Process's memory management field
+   >
+   > 　　struct context context;                     // Switch here to run process
+   >
+   > 　　struct trapframe *tf;                       // Trap frame for current interrupt
+   >
+   > 　　uintptr_t cr3;                              // CR3 register: the base addr of Page Directroy Table(PDT)
+   >
+   > 　　uint32_t flags;                             // Process flag
+   >
+   > 　　char name[PROC_NAME_LEN + 1];               // Process name
+   >
+   > 　　list_entry_t list_link;                     // Process link list 
+   >
+   > 　　list_entry_t hash_link;                     // Process hash list
+   >
+   > };
 
 ### 12.2 进程创建
 
 1. fork()的返回值是唯一的吗？父进程和子进程的返回值是不同的。请找到相应的赋值代码。
 
+   > 答：不是唯一的。父进程是子进程的PID，子进程是0
+
 2. 新进程创建时的进程标识是如何设置的？请指明相关代码。
+
+   > 答：通过函数 get_pid 进行设置
 
 3. 请通过fork()的例子中进程标识的赋值顺序说明进程的执行顺序。
 
+   > 答：赋值顺序即可知执行顺序
+
 4. 请在ucore启动时显示空闲进程（idleproc）和初始进程（initproc）的进程标识。
 
+   > 答：idleproc的pid为0，initproc的pid为1
+
 5. 请在ucore启动时显示空闲线程（idleproc）和初始进程(initproc)的进程控制块中的“pde_t *pgdir”的内容。它们是否一致？为什么？
+
+   > 答：都是内核页表基地址，一样，以为内核线程共用页表
 
 ### 12.3 进程加载
 
 1. 加载进程后，新进程进入就绪状态，它开始执行时的第一条指令的位置，在elf中保存在什么地方？在加载后，保存在什么地方？
+
+   > 答：
+
 2. 第一个用户进程执行的代码在哪里？它是什么时候加载到内存中的？
+
+   > 答：因为lab4和5还没有文件系统，所以在bootloader加载kernel到内存时就加载了这个用户程序到内存中来。
 
 ### 12.4 进程等待与退出
 
 1. 试分析wait()和exit()的结果放在什么地方？exit()是在什么时候放进去的？wait()在什么地方取到出的？
 
+   > 答：
+
 2. 试分析ucore操作系统内核是如何把子进程exit()的返回值传递给父进程wait()的？
+
+   > 答：在 kernel_thread_entry 中调用 do_exit 前将返回值压栈。
 
 3. 什么是僵尸进程和孤儿进程？
 
+   > 答：僵尸进程是子进程执行了exit，但是父进程没有执行wait对子进程资源进行回收
+   >
+   > 　　孤儿进程是子进程还没执行结束，父进程已经退出了
+
 4. 试分析sleep()系统调用的实现。在什么地方设置的定时器？它对应的等待队列是哪个？它的唤醒操作在什么地方？
 
+   > 答：
+
 5. 通常的函数调用和函数返回都是一一对应的。有不是一一对应的例外情况？如果有，请举例说明。
+
+   > 答：有。
 
 ## 小组思考题
 
@@ -94,7 +157,7 @@ instruction_to_execute = self.proc_info[self.curr_proc][PROC_CODE].pop(0)
  - 调度函数：next_proc
 
 ### 执行实例
-   
+
 #### 例1
 ```
 $./process-simulation.py  -l 5:30:30,5:40:30 -c

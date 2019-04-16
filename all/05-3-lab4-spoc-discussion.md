@@ -12,65 +12,65 @@
 
 2. ucore的线程控制块数据结构是什么？
 
-   >  答：是 proc_struct ，并且在ucore中只有一个PCB数据结构，进程和线程都使用这一个数据结构；
+   > 答：在ucore中只有一个PCB数据结构（proc_struct），进程和线程都使用这一个数据结构；
 
 ### 13.2 关键数据结构
 
 1. 分析proc_struct数据结构，说明每个字段的用途，是线程控制块或进程控制块的，会在哪些函数中修改。
 
-   > 答：struct proc_struct {
+   > 答：寄存器状态、堆栈、当前指令指针等信息是线程控制块的；
    >
-   > ​    　　enum proc_state state;                      // Process state
+   > 　　mm, vma等内存管理字段是进程控制块的；
    >
-   > ​    　　int pid;                                    // Process ID
+   > struct proc_struct {
    >
-   >    　　 int runs;                                   // the running times of Proces
+   > ​    　enum proc_state state;                      // Process state
    >
-   >    　　 uintptr_t kstack;                           // Process kernel stack
+   >    　 int pid;                                    // Process ID
    >
-   > 　　    volatile bool need_resched;                 // bool value: need to be rescheduled to release CPU?
+   >   　  int runs;                                   // the running times of Proces
    >
-   >  　　   struct proc_struct *parent;                 // the parent process
+   >   　  uintptr_t kstack;                           // Process kernel stack
    >
-   >  　　   struct mm_struct *mm;                       // Process's memory management field
+   >   　  volatile bool need_resched;                 // bool value: need to be rescheduled to release CPU?
    >
-   >  　　   struct context context;                     // Switch here to run process
+   >   　  struct proc_struct *parent;                 // the parent process
    >
-   >  　　   struct trapframe *tf;                       // Trap frame for current interrupt
+   > 　    struct mm_struct *mm;                       // Process's memory management field
    >
-   >  　　   uintptr_t cr3;                              // CR3 register: the base addr of Page Directroy Table(PDT)
+   >    　 struct context context;                     // Switch here to run process
    >
-   >  　　   uint32_t flags;                             // Process flag
+   >  　   struct trapframe *tf;                       // Trap frame for current interrupt
    >
-   >  　　   char name[PROC_NAME_LEN + 1];               // Process name
+   > 　    uintptr_t cr3;                              // CR3 register: the base addr of Page Directroy Table(PDT)
    >
-   > 　　    list_entry_t list_link;                     // Process link list 
+   >  　   uint32_t flags;                             // Process flag
    >
-   >  　　   list_entry_t hash_link;                     // Process hash list
+   >  　   char name[PROC_NAME_LEN + 1];               // Process name
+   >
+   > 　    list_entry_t list_link;                     // Process link list 
+   >
+   > 　    list_entry_t hash_link;                     // Process hash list
    >
    > };
-   >
-   > 其中寄存器状态、堆栈、当前指令指针等信息是线程控制块和进程控制块都有的，会在进程创建，切换等函数中修改；
-   >
-   > 其中 mm,  vma 等内存管理字段是进程控制块的，会在进程创建的时候被修改；
 
 2. 如何知道ucore的两个线程同在一个进程？
 
-   > 答：因为同一个线程共用进程的内存资源（页表），所以查看线程控制块中 cr3 是否一致可以判断；
+   > 答：查看线程控制块中 cr3 是否一致；同一进程的线程共用进程的地址空间
 
 3. context和trapframe分别在什么时候用到？
 
-   > 答：trapframe 在中断响应时用到；context 在线程上下文切换时用到；
+   > 答：trapframe在中断响应时用到；context在线程切换时用到；
 
 4. 用户态或内核态下的中断处理有什么区别？在trapframe中有什么体现？
 
-   > 答：在用户态中断响应时，要切换到内核态，同时对应栈的切换，还有SS，ESP的压栈处理；而在内核态中断响应时，没有这种切换；  
+   > 答：在用户态中断响应时，要切换到内核态；而在内核态中断响应时，没有这种切换；
    >
-   > 　　在trapframe中通过 tf_esp, tf_ss 字段可以体现
+   > 　　tf_esp, tf_ss字段。状态切换时需要在占中压入 esp 和 ss，要保存在 trapframe 中
 
 5. 分析trapframe数据结构，说明每个字段的用途，是由硬件或软件保存的，在内核态中断响应时是否会保存。
 
-   > 答：tf_eip,  tf_cs等由硬件保存；tf_esp,  tf_ss等在用户态响应时由硬件保存；
+   > 答：tf_eip, tf_cs等由硬件保存；tf_esp, tf_ss等在用户态响应时由硬件保存；
    >
    > 　　通用寄存器由软件保存；( lab4/kern/trap/trapentry.S )
 
@@ -78,17 +78,17 @@
 
 1. kernel_thread创建的内核线程执行的第一条指令是什么？它是如何过渡到内核线程对应的函数的？
 
- > tf.tf_eip = (uint32_t) kernel_thread_entry;
-
- > /kern-ucore/arch/i386/init/entry.S
-
- > /kern/process/entry.S
+   > 答：tf.tf_eip = (uint32_t) kernel_thread_entry;
+   >
+   > 　　/kern-ucore/arch/i386/init/entry.S
+   >
+   > 　　/kern/process/entry.S
 
 2. 内核线程的堆栈初始化在哪？
 
-   > 答：代码位于：setup_stack
+   > 答：setup_stack
    >
-   > 　　地址存放于 tf 和 context 中的 esp
+   > 　　tf 和 context 中的 esp
 
 3. fork()父子进程的返回值是不同的。这在源代码中的体现中哪？
 
@@ -98,19 +98,19 @@
 
 4. 内核线程initproc的第一次执行流程是什么样的？能跟踪出来吗？
 
-   > 答：这一部分见我的lab4实验报告详细描述
+   > 答：do_fork() 函数返回的 ret=proc->pid; 即父进程返回子进程的pid
    >
-   > 　　https://github.com/oscourse-tsinghua/os2019-liuruiyang98/blob/master/labcodes/lab4/lab4.md
+   > 　　同时在do_fork() 函数中调用的 copy_thread 函数中proc->tf->tf_regs.reg_eax = 0; 将0作为子进程的返回值。
 
 5. 分析线程切换流程，找到内核堆栈、页表、寄存器切换的代码位置。
 
    > 答：在proc_run 函数中，对应代码如下：
    >
-   > 　    　　 load_esp0(next->kstack + KSTACKSIZE);　　　　——— 内核堆栈切换
+   > 　 　 load_esp0(next->kstack + KSTACKSIZE);　　　　——— 内核堆栈切换
    >
-   > ​        　　 lcr3(next->cr3);　　　　　　　　　　　　　　　———页表切换
+   >  　　 lcr3(next->cr3);　　　　　　　　　　　　　　　———页表切换
    >
-   > ​         　　switch_to(&(prev->context), &(next->context));　——— 寄存器切换
+   >  　　switch_to(&(prev->context), &(next->context));　——— 寄存器切换
 
 6. 分析C语言中调用汇编函数switch_to()的参数传递位置。
 
@@ -118,7 +118,7 @@
 
 7. 分析内核线程idleproc的创建流程，说明线程切换后执行的第一条是什么。
 
-   >  答：proc->context.eip = forkret;
+   > 答：proc->context.eip = forkret;
    >
    > 　　tf.tf_eip = (uint32_t) kernel_thread_entry;
    >
@@ -151,8 +151,9 @@
 ### 练习2：分析并描述新创建的内核线程是如何分配资源的
 
 > 注意 理解对kstack, trapframe, context等的初始化
->
-> 当前进程中唯一，操作系统的整个生命周期不唯一，在get_pid中会循环使用pid，耗尽会等待
+
+
+当前进程中唯一，操作系统的整个生命周期不唯一，在get_pid中会循环使用pid，耗尽会等待
 
 ### 练习3：
 
